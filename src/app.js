@@ -12,11 +12,12 @@ app.use(express.json())
 app.use(workerRouter)
 app.use(userRouter)
 
-app.get("/", async(req, res)=>{
+app.get("", async(req, res)=>{
     try {
         const workerData = await Worker.find({})
         .select("_id name title avatar location")
         .limit(20)
+        .skip(20*req.query.page)
         res.send(workerData)
     } catch (error) {
         res.status(500).send({msg:"Something went wrong!"})

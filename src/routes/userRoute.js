@@ -12,31 +12,58 @@ const router = new Router()
 
 //User SignUp
 router.post("/signup/user", async (req, res) => {
-    async function createUser() {
+    try {
         const user = new User(req.body)
-        try {
-            await user.save()
-            res.status(201).send(user)
-        } catch (error) {
-            res.status(400).send(error)
+        await user.generateOtp()
+        await user.save()
+        await user.sendMail()
+        res.status(201).send("Check Your Email and Verify!")
+    } catch (error) {
+        if(error.keyValue.email){
+            return res.status(400).send({msg: "User Already exists!"})
         }
+        res.status(500).send({msg:"Something went wrong"})
     }
-    if (!req.body.email && !req.body.mobile) {
-        return res.status(400).send("Email/Mobile is required!!")
+
+    // async function createUser() {
+    //     const user = new User(req.body)
+    //     try {
+    //         await user.save()
+    //         res.status(201).send("Created Successfully!")
+    //     } catch (error) {
+    //         res.status(500).send(error)
+    //     }
+    // }
+
+    // if (!req.body.email && !req.body.mobile) {
+    //     return res.status(400).send("Email/Mobile is required!!")
+    // }
+    // else if (req.body.email && req.body.mobile) {
+    //     if (await User.findOne({ email: req.body.email }) || await User.findOne({ mobile: req.body.mobile })) {
+    //         return res.status(400).send({ Error: "Email or mobile already exits in database pls try another!" })
+    //     }
+    //     createUser()
+    // }
+    // else {
+    //     if (req.body.mobile) {
+    //         return await User.findOne({ mobile: req.body.mobile }) ? res.status(400).send({ error: "Mobile already exists in database!" }) : createUser()
+    //     }
+    //     else {
+    //         return await User.findOne({ email: req.body.email }) ? res.status(400).send({ error: "Email already exists in database!" }) : createUser()
+    //     }
+    // }
+})
+
+//User Verify
+router.get("/signup/user/verify", async (req, res)=>{
+    if(!req.query.token || !req.query.email){
+        return res.status(400).send({msg: "Wrong link!"})
     }
-    else if (req.body.email && req.body.mobile) {
-        if (await User.findOne({ email: req.body.email }) || await User.findOne({ mobile: req.body.mobile })) {
-            return res.status(400).send({ Error: "Email or mobile already exits in database pls try another!" })
-        }
-        createUser()
-    }
-    else {
-        if (req.body.mobile) {
-            return await User.findOne({ mobile: req.body.mobile }) ? res.status(400).send({ error: "Mobile already exists in database!" }) : createUser()
-        }
-        else {
-            return await User.findOne({ email: req.body.email }) ? res.status(400).send({ error: "Email already exists in database!" }) : createUser()
-        }
+    try {
+        const user = await User.emailVerify(req.query.email, req.query.token)
+        res.status(200).send({msg: "Verfied Successfully :)"})
+    } catch (error) {
+        res.status(500).send({msg : "Something went wrong!"})
     }
 })
 
@@ -44,12 +71,13 @@ router.post("/signup/user", async (req, res) => {
 //User Login
 router.post("/login/user", async (req, res) => {
     try {
-        const user = await User.findByCredentails(mobile = req.body.mobile, email = req.body.email, password = req.body.password)
+        const user = await User.findByCredentails(email = req.body.email, password = req.body.password)
         const token = await user.generateAuthToken()
         user.tokens = user.tokens.concat({ token: token })
         await user.save()
         res.status(200).send({ user, token })
     } catch (error) {
+        console.log(error)
         res.status(400).send({ error: "Login : Wrong credentials!" })
     }
 })
@@ -244,5 +272,19 @@ router.get("/home", auth, async(req, res)=>{
         res.status(500)
     }
 })
+
+
+
+
+// router.post("/user/sendmail", auth, async (req, res)=>{
+//     try{
+//         await req.user.sendEmail()
+//         res.send("mail sent")
+//     }
+//     catch(e){
+//         console.log(e)
+//         res.status(500)
+//     }
+// })
 
 module.exports = router

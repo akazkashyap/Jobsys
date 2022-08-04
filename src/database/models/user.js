@@ -180,7 +180,7 @@ userSchema.statics.findByCredentails = async (email, password) => {
             return user
         }
         else {
-            throw new Error("Error: User not verified!")
+            throw new Error("verification")
         }
     }
     throw new Error("Error: Wrong credentials!")

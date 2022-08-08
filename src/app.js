@@ -1,26 +1,54 @@
 const express = require("express")
 const workerRouter = require("./routes/workerRoute")
 const userRouter = require("./routes/userRoute")
-const path = require("path")
 const Worker = require("./database/models/worker")
+const cros = require("cors")
 
 const PORT = process.env.PORT || 3000
 const app = express()
 app.use(express.json())
 
+
 //Routes
 app.use(workerRouter)
 app.use(userRouter)
+app.use(cros())
 
-app.get("", async(req, res)=>{
+app.get("/", async(req, res)=>{
     try {
         const workerData = await Worker.find({})
         .select("_id name title avatar location")
         .limit(20)
         .skip(20*req.query.page)
-        res.send(workerData)
+        res.status(200).send(workerData)
     } catch (error) {
         res.status(500).send({msg:"Something went wrong!"})
+    }
+})
+
+//Guest search api
+app.get("/search", async(req, res)=>{
+    if(!req.query.q){
+        return res.send({msg: "Please enter keywords to search!"})
+    }
+    try{
+        const worker =  await Worker.find({
+            $or:[
+                {location:{$regex: req.query.q}},
+                {title:{$regex: req.query.q}},
+                {name:req.query.q}
+            ]
+        })
+        .select("_id name title avatar location")
+        .limit(20)
+        .skip(20*req.query.page)
+        if(!worker.length){
+            return res.status(204).send({msg:"No results found."})
+        }
+        res.status(200).send(worker)
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({msg: "Something went wrong"})
     }
 })
 

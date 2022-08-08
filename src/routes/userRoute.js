@@ -10,6 +10,7 @@ const Worker = require("../database/models/worker")
 //Router
 const router = new Router()
 
+
 //User SignUp
 router.post("/signup/user", async (req, res) => {
     try {

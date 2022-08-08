@@ -20,6 +20,9 @@ app.get("/", async(req, res)=>{
         .select("_id name title avatar location")
         .limit(20)
         .skip(20*req.query.page)
+        if(!workerData.length){
+            return res.status(204).send({msg:"Nothing to show!"})
+        }
         res.status(200).send(workerData)
     } catch (error) {
         res.status(500).send({msg:"Something went wrong!"})

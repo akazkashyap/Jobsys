@@ -2,7 +2,7 @@ const express = require("express")
 const workerRouter = require("./routes/workerRoute")
 const userRouter = require("./routes/userRoute")
 const Worker = require("./database/models/worker")
-const cros = require("cors")
+const cors = require("cors")
 
 const PORT = process.env.PORT || 3000
 const app = express()

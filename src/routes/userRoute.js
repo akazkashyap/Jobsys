@@ -21,7 +21,6 @@ router.post("/signup/user", async (req, res) => {
         res.status(201).send("Check Your Email and Verify!")
     } catch (error) {
         if (error.errors) {
-            console.log(error.errors)
             return res.status(400).send({ msg: "All feilds are required!" })
         }
         else if (error.keyValue.email) {

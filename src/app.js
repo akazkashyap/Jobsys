@@ -35,10 +35,10 @@ app.get("/", async(req, res)=>{
     try {
         const workerData = await Worker.find({})
         .select("_id name title avatar location")
-        .limit(20)
-        .skip(20*req.query.page)
+        .limit(10)
+        .skip(10*req.query.page)
         if(!workerData.length){
-            return res.status(204).send({msg:"Nothing to show!"})
+            return res.status(404).send({msg:"Nothing to show!"})
         }
         res.status(200).send(workerData)
     } catch (error) {
@@ -60,10 +60,10 @@ app.get("/search", async(req, res)=>{
             ]
         })
         .select("_id name title avatar location")
-        .limit(20)
-        .skip(20*req.query.page)
+        .limit(10)
+        .skip(10*req.query.page)
         if(!worker.length){
-            return res.status(204).send({msg:"No results found."})
+            return res.status(404).send({msg:"No results found."})
         }
         res.status(200).send(worker)
     } catch (error) {

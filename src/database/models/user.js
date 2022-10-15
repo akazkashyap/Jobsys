@@ -3,7 +3,7 @@ const validator = require("validator")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const nodemailer = require("nodemailer")
-const websiteUrl = "http://localhost:3000/signup/user/verify" 
+const websiteUrl = "http://localhost:3000/signup/user/verify"
 const prodUrl = "https://workkey.herokuapp.com/signup/user/verify"
 
 
@@ -11,7 +11,8 @@ const userSchema = mongoose.Schema({
     name: {
         type: String,
         trim: true,
-        lowercase: true
+        lowercase: true,
+        required: true
     },
 
     age: {
@@ -58,7 +59,7 @@ const userSchema = mongoose.Schema({
 
     location: {
         type: String,
-        required: true,
+        default: null,
         lowercase: true,
     },
 
@@ -132,35 +133,35 @@ userSchema.methods.generateOtp = async function () {
 //send verification mail
 userSchema.methods.sendMail = function () {
     const transporter = nodemailer.createTransport({
-      service:'gmail',
-      auth : {
-        user:"0195cse042@vgi.ac.in",
-        pass: process.env.EMAIL_PASSWORD
-      }
+        service: 'gmail',
+        auth: {
+            user: "0195cse042@vgi.ac.in",
+            pass: "qwertyuiop@0"
+        }
     })
 
     let mailOptions = {
-      from: "Workey",
-      to: this.email ,
-      subject: "Workey",
-      html : `<h1>Hello ${this.name.toUpperCase()}</h1> <br> <p>Your verification link is: <a href="${prodUrl}?email=${this.email}&token=${this.otp[0].token}">verification link.</a> <br><p>This link will expire in 2 days (48 hours).</p>`
+        from: "Workey",
+        to: this.email,
+        subject: "Workey",
+        html: `<h1>Hello ${this.name.toUpperCase()}</h1> <br> <p>Your verification link is: <a href="${prodUrl}?email=${this.email}&token=${this.otp[0].token}">verification link.</a> <br><p>This link will expire in 2 days (48 hours).</p>`
     }
 
     transporter.sendMail(mailOptions)
-    .then(res =>console.log("msg sent!"))
-    .catch(err=>console.log(err))
+        .then(res => console.log("msg sent!"))
+        .catch(err => console.log(err))
 }
 
 //Check Verification link
-userSchema.statics.emailVerify = async function(email,token){
+userSchema.statics.emailVerify = async function (email, token) {
     const valid = jwt.verify(token, process.env.JWT_SECRETCODE)
-    if(!valid){
+    if (!valid) {
         throw new Error("Error: Link has expired!")
     }
     try {
         const user = await User.findOne({
             email,
-            'otp.token' : token
+            'otp.token': token
         })
         user.verified = true
         await user.save()
@@ -173,7 +174,7 @@ userSchema.statics.emailVerify = async function(email,token){
 
 //Login Function
 userSchema.statics.findByCredentails = async (email, password) => {
-    const user = await User.findOne({email})
+    const user = await User.findOne({ email })
     if (user) {
         const permit = await bcrypt.compare(password, user.password)
         if (permit && user.verified) {

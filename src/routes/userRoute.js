@@ -20,10 +20,18 @@ router.post("/signup/user", async (req, res) => {
         await user.sendMail()
         res.status(201).send("Check Your Email and Verify!")
     } catch (error) {
-        if(error.keyValue.email){
-            return res.status(400).send({msg: "User Already exists!"})
+        if (error.errors) {
+            console.log(error.errors)
+            return res.status(400).send({ msg: "All feilds are required!" })
         }
-        res.status(500).send({msg:"Something went wrong"})
+        else if (error.keyValue.email) {
+            return res.status(400).send({ msg: "User Already exists!" })
+        }
+        else {
+            return res.status(400).send({ msg: "Bad request, try again" })
+
+        }
+        res.status(500).send({ msg: "Something went wrong" })
     }
 
     // async function createUser() {
@@ -56,15 +64,15 @@ router.post("/signup/user", async (req, res) => {
 })
 
 //User Verify
-router.get("/signup/user/verify", async (req, res)=>{
-    if(!req.query.token || !req.query.email){
-        return res.status(400).send({msg: "Wrong link!"})
+router.get("/signup/user/verify", async (req, res) => {
+    if (!req.query.token || !req.query.email) {
+        return res.status(400).send({ msg: "Wrong link!" })
     }
     try {
         const user = await User.emailVerify(req.query.email, req.query.token)
-        res.status(200).send({msg: "Verfied Successfully :)"})
+        res.status(200).send({ msg: "Verfied Successfully :)" })
     } catch (error) {
-        res.status(500).send({msg : "Something went wrong!"})
+        res.status(500).send({ msg: "Something went wrong!" })
     }
 })
 
@@ -78,8 +86,8 @@ router.post("/login/user", async (req, res) => {
         await user.save()
         res.status(200).send({ user, token })
     } catch (error) {
-        if(error = "verification"){
-            return res.status(400).send({msg: "User haven't verified"})
+        if (error = "verification") {
+            return res.status(400).send({ msg: "User haven't verified" })
         }
         console.log(error)
         res.status(400).send({ error: "Login : Wrong credentials!" })
@@ -94,7 +102,7 @@ router.post("/user/logout", auth, async (req, res) => {
             return token.token !== req.token
         })
         await req.user.save()
-        res.send({msg: "Logged out"})
+        res.send({ msg: "Logged out" })
     } catch (error) {
         res.status(500)
     }
@@ -139,7 +147,7 @@ router.post("/user/profile/set-avatar", auth, upload.single("avatar"), async (re
         const buffer = await sharp(req.file.buffer).resize(200, 200).png().toBuffer()
         req.user.avatar = buffer
         await req.user.save()
-        res.status(200).send({avatar : req.user.avatar})
+        res.status(200).send({ avatar: req.user.avatar })
     } catch (error) {
         res.status(400)
     }
@@ -151,7 +159,7 @@ router.patch("/user/profile/update", auth, async (req, res) => {
     const allowedUpdates = ["name", "password", "location", "age"]
     const providedUpdates = Object.keys(req.body)
     const allowed = providedUpdates.every(update => allowedUpdates.includes(update))
-    
+
     if (!allowed) {
         return res.status(406).send({ error: "Invalid update!" })
     }
@@ -171,14 +179,14 @@ router.patch("/user/profile/update", auth, async (req, res) => {
 router.post("/user/liked-worker/add_:id", auth, async (req, res) => {
     try {
         //checking if wotker alreay exist in list
-        req.user.likedWorkers.forEach((worker)=>{
-            if(worker.worker_id.toString() == req.params.id){
-                return res.status(400).send({msg: "Already added."})
+        req.user.likedWorkers.forEach((worker) => {
+            if (worker.worker_id.toString() == req.params.id) {
+                return res.status(400).send({ msg: "Already added." })
             }
         })
-        req.user.likedWorkers = req.user.likedWorkers.concat({worker_id: req.params.id})
+        req.user.likedWorkers = req.user.likedWorkers.concat({ worker_id: req.params.id })
         await req.user.save()
-        res.status(200).send({msg:"Added successfully."})
+        res.status(200).send({ msg: "Added successfully." })
     } catch (error) {
         res.status(500)
     }
@@ -189,7 +197,7 @@ router.post("/user/liked-worker/add_:id", auth, async (req, res) => {
 router.get("/user/liked-worker", auth, async (req, res) => {
     try {
         await req.user.populate({
-            path:'likedWorkers.worker_id',
+            path: 'likedWorkers.worker_id',
             // match,
             // options:{
             //     limit:1
@@ -213,7 +221,7 @@ router.post("/user/call/add_:id", auth, async (req, res) => {
                 callCount: 1
             }
         })
-        res.status(200).send({msg: "Added succesfully!"})
+        res.status(200).send({ msg: "Added succesfully!" })
     } catch (error) {
         res.status(400)
     }
@@ -222,7 +230,7 @@ router.post("/user/call/add_:id", auth, async (req, res) => {
 
 
 //Call history
-router.get("/user/call/history", auth, async (req, res)=>{
+router.get("/user/call/history", auth, async (req, res) => {
     try {
         await req.user.populate("calls.to", "name")
         res.status(200).send(req.user.calls)
@@ -233,10 +241,10 @@ router.get("/user/call/history", auth, async (req, res)=>{
 
 
 //Delete user
-router.delete("/user/profile/delete-account",auth, async(req, res)=>{
+router.delete("/user/profile/delete-account", auth, async (req, res) => {
     try {
         await req.user.remove()
-        res.status(200).send({msg: "Deleted successfully!"})
+        res.status(200).send({ msg: "Deleted successfully!" })
     } catch (error) {
         res.status(500)
     }
@@ -244,33 +252,33 @@ router.delete("/user/profile/delete-account",auth, async(req, res)=>{
 
 //Search
 ///user/search?q=query
-router.get("/user/search", auth, async(req, res)=>{
-    if(!req.query.q){
-        return res.send({msg: "Please enter keywords to search!"})
+router.get("/user/search", auth, async (req, res) => {
+    if (!req.query.q) {
+        return res.send({ msg: "Please enter keywords to search!" })
     }
-    try{
-        const worker =  await Worker.find({
-            $or:[
-                {location:{$regex: req.query.q}},
-                {title:{$regex: req.query.q}},
-                {name:req.query.q}
+    try {
+        const worker = await Worker.find({
+            $or: [
+                { location: { $regex: req.query.q } },
+                { title: { $regex: req.query.q } },
+                { name: req.query.q }
             ]
         })
-        if(!worker.length){
-            return res.status(204).send({msg:"No results found."})
+        if (!worker.length) {
+            return res.status(204).send({ msg: "No results found." })
         }
         res.send(worker)
     } catch (error) {
-        res.status(500).send({msg: "Something went wrong"})
-    }  
+        res.status(500).send({ msg: "Something went wrong" })
+    }
 })
 
 //Home page
-router.get("/home", auth, async(req, res)=>{
+router.get("/home", auth, async (req, res) => {
     try {
-        const worker = await Worker.find({status:true})
-        .limit(10)
-        .skip(req.query.page*10)
+        const worker = await Worker.find({ status: true })
+            .limit(10)
+            .skip(req.query.page * 10)
         res.status(200).send(worker)
     } catch (error) {
         res.status(500)

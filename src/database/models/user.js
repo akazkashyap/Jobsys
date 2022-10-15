@@ -3,8 +3,7 @@ const validator = require("validator")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const nodemailer = require("nodemailer")
-const websiteUrl = "http://localhost:3000/signup/user/verify"
-const prodUrl = "https://workkey.herokuapp.com/signup/user/verify"
+const prodUrl = "/signup/user/verify"
 
 
 const userSchema = mongoose.Schema({

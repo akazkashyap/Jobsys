@@ -121,7 +121,7 @@ userSchema.methods.generateAuthToken = function () {
 userSchema.methods.generateOtp = async function () {
     try {
         const code = Math.floor((Math.random() * 100000) + 100000).toString()
-        const token = jwt.sign({ otp: code }, process.env.JWT_SECRETCODE, { expiresIn: "2d" })
+        const token = jwt.sign({ otp: code }, process.env.JWT_SECRETCODE, { expiresIn: 180 })
         this.otp = { otp: code, token: token }
     } catch (error) {
         console.log(error)
@@ -143,7 +143,10 @@ userSchema.methods.sendMail = function () {
         from: "Workey",
         to: this.email,
         subject: "Workey",
-        html: `<h1>Hello ${this.name.toUpperCase()}</h1> <br> <p>Your verification link is: <a href="${prodUrl}?email=${this.email}&token=${this.otp[0].token}">verification link.</a> <br><p>This link will expire in 2 days (48 hours).</p>`
+        html: `<h1>Hello ${this.name.toUpperCase()}</h1> 
+        <br> <p>Your verification link is: 
+        <a href="${prodUrl}?email=${this.email}&token=${this.otp[0].token}">
+        verification link.</a> <br><p>This link will expire in 180 seconds (3 minutes).</p>`
     }
 
     transporter.sendMail(mailOptions)

@@ -16,6 +16,8 @@ router.post("/signup/user", async (req, res) => {
     try {
         const user = new User(req.body)
         await user.generateOtp()
+        const token = await user.generateAuthToken()
+        user.tokens = user.tokens.concat({ token: token })
         await user.save()
         await user.sendMail()
         res.status(201).send("Check Your Email and Verify!")

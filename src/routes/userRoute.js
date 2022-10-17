@@ -73,7 +73,21 @@ router.get("/signup/user/verify", async (req, res) => {
         const user = await User.emailVerify(req.query.email, req.query.token)
         res.status(200).send({ msg: "Verfied Successfully :)" })
     } catch (error) {
+        if (error.name === "TokenExpiredError") {
+            return res.send({ msg: "Verification link has expired!" })
+        }
         res.status(500).send({ msg: "Something went wrong!" })
+    }
+})
+
+router.post("/user/resend-verification-link", auth, async (req, res) => {
+    try {
+        await req.user.generateOtp()
+        req.user.save()
+        req.user.sendMail()
+        res.send({ msg: "Mail sent again" })
+    } catch (err) {
+        res.status(500)
     }
 })
 
@@ -93,6 +107,8 @@ router.post("/login/user", async (req, res) => {
         res.status(400).send({ error: "Login : Wrong credentials!" })
     }
 })
+
+
 
 
 //User Logout

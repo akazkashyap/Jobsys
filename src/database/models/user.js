@@ -158,7 +158,7 @@ userSchema.methods.sendMail = function () {
 userSchema.statics.emailVerify = async function (email, token) {
     const valid = jwt.verify(token, process.env.JWT_SECRETCODE)
     if (!valid) {
-        throw new Error("Error: Link has expired!")
+        throw new Error("token expired")
     }
     try {
         const user = await User.findOne({

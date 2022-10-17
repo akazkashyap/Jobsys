@@ -85,6 +85,9 @@ router.post("/login/user", async (req, res) => {
         const token = await user.generateAuthToken()
         user.tokens = user.tokens.concat({ token: token })
         await user.save()
+        if (user.verified) {
+            return res.status(200).send({ user, token })
+        }
         res.status(200).send({ user, token, verified: user.verified })
     } catch (error) {
         res.status(400).send({ error: "Login : Wrong credentials!" })

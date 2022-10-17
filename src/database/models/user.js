@@ -179,12 +179,10 @@ userSchema.statics.findByCredentails = async (email, password) => {
     const user = await User.findOne({ email })
     if (user) {
         const permit = await bcrypt.compare(password, user.password)
-        if (permit && user.verified) {
+        if (permit) {
             return user
         }
-        else {
-            throw new Error("verification")
-        }
+        throw new Error()
     }
     throw new Error("Error: Wrong credentials!")
 }

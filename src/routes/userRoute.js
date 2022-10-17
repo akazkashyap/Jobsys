@@ -20,7 +20,7 @@ router.post("/signup/user", async (req, res) => {
         user.tokens = user.tokens.concat({ token: token })
         await user.save()
         await user.sendMail()
-        res.status(201).send("Check Your Email and Verify!")
+        res.status(201).send({ msg: "Check Your Email and Verify!", token })
     } catch (error) {
         if (error.errors) {
             return res.status(400).send({ msg: "All feilds are required!" })

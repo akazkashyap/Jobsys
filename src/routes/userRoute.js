@@ -218,7 +218,7 @@ router.post("/user/liked-worker/:id", auth, async (req, res) => {
 })
 
 
-router.post("/user/liked-worker/get_likes", auth, (req, res) => {
+router.get("/user/liked-worker/get_likes", auth, (req, res) => {
     try {
         res.status(200).send(req.user.likedWorkers)
     } catch (error) {

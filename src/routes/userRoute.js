@@ -191,22 +191,33 @@ router.patch("/user/profile/update", auth, async (req, res) => {
 })
 
 
-//Add Liked Workers
-router.post("/user/liked-worker/add_:id", auth, async (req, res) => {
+//Add or Remove Liked Workers
+router.post("/user/liked-worker/:id", auth, async (req, res) => {
     try {
+        let flag = 0
         //checking if wotker alreay exist in list
         req.user.likedWorkers.forEach((worker) => {
             if (worker.worker_id.toString() == req.params.id) {
-                return res.status(400).send({ msg: "Already added." })
+                const index = req.user.likedWorkers.findIndex(item => item == worker)
+                console.log(index)
+                req.user.likedWorkers.splice(index, 1)
+                flag = 1
             }
         })
-        req.user.likedWorkers = req.user.likedWorkers.concat({ worker_id: req.params.id })
-        await req.user.save()
-        res.status(200).send({ msg: "Added successfully." })
+        if (flag == 0) {
+            req.user.likedWorkers = req.user.likedWorkers.concat({ worker_id: req.params.id })
+            await req.user.save()
+            res.status(200).send({ msg: "Added." })
+        }
+        else {
+            await req.user.save()
+            res.status(200).send({ msg: "Removed" })
+        }
     } catch (error) {
         res.status(500)
     }
 })
+
 
 
 //Get liked workers

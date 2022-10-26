@@ -218,9 +218,17 @@ router.post("/user/liked-worker/:id", auth, async (req, res) => {
 })
 
 
+router.post("/user/liked-worker/get_likes", auth, (req, res) => {
+    try {
+        res.status(200).send(req.user.likedWorkers)
+    } catch (error) {
+        res.status(500)
+    }
+})
+
 
 //Get liked workers
-router.get("/user/liked-worker", auth, async (req, res) => {
+router.get("/user/liked-worker/get-worker", auth, async (req, res) => {
     try {
         await req.user.populate({
             path: 'likedWorkers.worker_id',

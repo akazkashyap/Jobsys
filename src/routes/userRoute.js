@@ -199,7 +199,6 @@ router.post("/user/liked-worker/:id", auth, async (req, res) => {
         req.user.likedWorkers.forEach((worker) => {
             if (worker.worker_id.toString() == req.params.id) {
                 const index = req.user.likedWorkers.findIndex(item => item == worker)
-                console.log(index)
                 req.user.likedWorkers.splice(index, 1)
                 flag = 1
             }
@@ -207,11 +206,11 @@ router.post("/user/liked-worker/:id", auth, async (req, res) => {
         if (flag == 0) {
             req.user.likedWorkers = req.user.likedWorkers.concat({ worker_id: req.params.id })
             await req.user.save()
-            res.status(200).send({ msg: "Added." })
+            res.status(200).send(req.user.likedWorkers)
         }
         else {
             await req.user.save()
-            res.status(200).send({ msg: "Removed" })
+            res.status(200).send(req.user.likedWorkers)
         }
     } catch (error) {
         res.status(500)

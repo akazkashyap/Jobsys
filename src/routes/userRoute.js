@@ -163,7 +163,7 @@ router.post("/user/profile/set-avatar", auth, upload.single("avatar"), async (re
         const buffer = await sharp(req.file.buffer).resize(200, 200).png().toBuffer()
         req.user.avatar = buffer
         await req.user.save()
-        res.status(200).send(req.user)
+        res.status(200).send({ avatar: req.user.avatar.toString("base64") })
     } catch (error) {
         res.status(400)
     }

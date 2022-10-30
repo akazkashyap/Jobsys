@@ -96,7 +96,7 @@ const userSchema = mongoose.Schema({
     }],
     avatar: {
         type: Buffer,
-        default: undefined
+        default: null
     }
 }, {
     timestamps: true

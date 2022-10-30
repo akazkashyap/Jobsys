@@ -298,6 +298,9 @@ router.get("/user/search", auth, async (req, res) => {
                 { name: req.query.q }
             ]
         })
+            .limit(10)
+            .skip(req.query.page * 10)
+
         if (!worker.length) {
             return res.status(204).send({ msg: "No results found." })
         }
@@ -308,7 +311,7 @@ router.get("/user/search", auth, async (req, res) => {
 })
 
 //Home page
-router.get("/home", auth, async (req, res) => {
+router.get("/user", auth, async (req, res) => {
     try {
         const worker = await Worker.find({ status: true })
             .limit(10)

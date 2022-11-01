@@ -306,7 +306,7 @@ router.get("/user/search", auth, async (req, res) => {
         }
         res.send(worker)
     } catch (error) {
-        res.status(500).send({ msg: "Something went wrong" })
+        res.status(500)
     }
 })
 

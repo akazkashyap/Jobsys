@@ -13,7 +13,7 @@ const router = new express.Router()
 //To save pic on cloud
 const Storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, "uploads"))
+        cb(null, path.join(__dirname, "../../assets/worker-images"))
     },
     filename: (req, file, cb) => {
         cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname))
@@ -37,7 +37,7 @@ const upload = multer({
 
 //Worker Signup
 router.post("/signup/worker", upload, async (req, res) => {
-    const imgPath = path.join(__dirname, "uploads/" + req.file.filename)
+    const imgPath = path.join(__dirname, "../../assets/worker-images/" + req.file.filename)
     try {
         if (!req.file) {
             return res.send("Please upload an image!")

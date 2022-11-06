@@ -3,11 +3,22 @@ const Worker = require("../database/models/worker")
 const express = require("express")
 const multer = require("multer")
 const sharp = require("sharp")
+const path = require("path")
+const fs = require("fs")
 const auth = require("../middleware/workerAuth")
 const Catagory = require("../database/models/catagory")
 
 const router = new express.Router()
 
+//To save pic on cloud
+const Storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, "uploads"))
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname))
+    }
+})
 
 const upload = multer({
     limits: {
@@ -18,11 +29,15 @@ const upload = multer({
             return cb(new Error("Please upload a valid image!"))
         }
         return cb(undefined, true)
-    }
+    },
+    storage: Storage
 }).single('avatar')
+
+
 
 //Worker Signup
 router.post("/signup/worker", upload, async (req, res) => {
+    const imgPath = path.join(__dirname, "uploads/" + req.file.filename)
     try {
         if (!req.file) {
             return res.send("Please upload an image!")
@@ -40,9 +55,11 @@ router.post("/signup/worker", upload, async (req, res) => {
                 res.status(400).send({ msg: "Mobile/Aadhar already associated with a worker!" })
             }
             else {
-                const buffer = await sharp(req.file.buffer).resize(200, 200).png().toBuffer()
+                console.log(req.file)
+                const buffer = await sharp(req.file.path).resize(110, 110).png().toBuffer()
                 const worker = new Worker(req.body)
                 worker.avatar = buffer
+                worker.imageLink = imgPath
                 await worker.save()
                 try {
                     const catagory = new Catagory({ title: req.body.title })
@@ -52,6 +69,7 @@ router.post("/signup/worker", upload, async (req, res) => {
             }
         }
     } catch (e) {
+        console.log(e)
         res.status(500).send(e)
     }
 })

@@ -13,7 +13,7 @@ const router = new express.Router()
 //To save pic on cloud
 const Storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, "../../assets/worker-images"))
+        cb(null, "../../assets/worker-images")
     },
     filename: (req, file, cb) => {
         cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname))
@@ -37,7 +37,7 @@ const upload = multer({
 
 //Worker Signup
 router.post("/signup/worker", upload, async (req, res) => {
-    const imgPath = path.join(__dirname, "../../assets/worker-images/" + req.file.filename)
+    const imgPath = req.file.path
     try {
         if (!req.file) {
             return res.send("Please upload an image!")
@@ -55,7 +55,7 @@ router.post("/signup/worker", upload, async (req, res) => {
                 res.status(400).send({ msg: "Mobile/Aadhar already associated with a worker!" })
             }
             else {
-                console.log(req.file)
+                console.log(req.file.path)
                 const buffer = await sharp(req.file.path).resize(110, 110).png().toBuffer()
                 const worker = new Worker(req.body)
                 worker.avatar = buffer
@@ -69,7 +69,6 @@ router.post("/signup/worker", upload, async (req, res) => {
             }
         }
     } catch (e) {
-        console.log(e)
         res.status(500).send(e)
     }
 })

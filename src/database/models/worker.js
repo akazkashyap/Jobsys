@@ -88,10 +88,10 @@ const workerSchema = mongoose.Schema({
         type: Buffer,
         required: true
     },
-    imageLink: {
-        type: String,
-        required: true
-    },
+    // imageLink: {
+    //     type: String,
+    //     required: true
+    // },
     tokens: [{
         token: {
             type: String,

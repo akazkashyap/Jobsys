@@ -37,7 +37,7 @@ const upload = multer({
 
 //Worker Signup
 router.post("/signup/worker", checkDir, upload, async (req, res) => {
-    const imgPath = "/assets/worker-images/" + req.file.filename
+    //const imgPath = "/assets/worker-images/" + req.file.filename
     try {
         if (!req.file) {
             return res.send("Please upload an image!")
@@ -55,10 +55,10 @@ router.post("/signup/worker", checkDir, upload, async (req, res) => {
                 res.status(400).send({ msg: "Mobile/Aadhar already associated with a worker!" })
             }
             else {
-                const buffer = await sharp(req.file.path).resize(110, 110).webp().toBuffer()
+                const buffer = await sharp(req.file.path).resize(200, 200).webp().toBuffer()
                 const worker = new Worker(req.body)
                 worker.avatar = buffer
-                worker.imageLink = imgPath
+                //worker.imageLink = imgPath
                 await worker.save()
                 try {
                     const catagory = new Catagory({ title: req.body.title })

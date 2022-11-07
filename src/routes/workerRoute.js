@@ -55,7 +55,7 @@ router.post("/signup/worker", checkDir, upload, async (req, res) => {
                 res.status(400).send({ msg: "Mobile/Aadhar already associated with a worker!" })
             }
             else {
-                const buffer = await sharp(req.file.path).resize(110, 110).png().toBuffer()
+                const buffer = await sharp(req.file.path).resize(110, 110).webp().toBuffer()
                 const worker = new Worker(req.body)
                 worker.avatar = buffer
                 worker.imageLink = imgPath

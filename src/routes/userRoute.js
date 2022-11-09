@@ -266,7 +266,7 @@ router.post("/user/call/add_:id", auth, async (req, res) => {
 //Call history
 router.get("/user/call/history", auth, async (req, res) => {
     try {
-        await req.user.populate("calls.to", "name")
+        await req.user.populate("calls.to", "name mobile title")
         res.status(200).send(req.user.calls)
     } catch (error) {
         res.status(500)

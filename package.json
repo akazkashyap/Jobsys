@@ -33,6 +33,7 @@
   "homepage": "https://github.com/akazkashyap/worker_api#readme",
   "devDependencies": {
     "env-cmd": "^10.1.0",
+    "googleapis": "^109.0.1",
     "nodemon": "^2.0.18"
   },
   "description": ""

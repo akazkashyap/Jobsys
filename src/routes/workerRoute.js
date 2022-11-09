@@ -64,7 +64,7 @@ router.post("/signup/worker", checkDir, upload, async (req, res) => {
                     const catagory = new Catagory({ title: req.body.title })
                     await catagory.save()
                 } catch { }
-                res.status(201).send(__dirname)
+                res.status(201).send(worker)
             }
         }
     } catch (e) {

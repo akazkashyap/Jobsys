@@ -67,10 +67,7 @@ const userSchema = mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Workers",
         },
-        time: {
-            type: Date,
-            default: Date.now
-        }
+        time: String
     }],
 
     callCount: {

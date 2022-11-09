@@ -245,11 +245,11 @@ router.get("/user/liked-worker/get-worker", auth, async (req, res) => {
 
 
 //Add calls and increase callCounts
-router.post("/user/call/add_:id", auth, async (req, res) => {
+router.post("/user/call/add", auth, async (req, res) => {
     try {
         const user = await User.updateOne({ _id: req.user._id }, {
             $push: {
-                calls: { to: req.params.id }
+                calls: { to: req.body.id, time: req.body.time }
             },
             $inc: {
                 callCount: 1

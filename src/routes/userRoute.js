@@ -249,7 +249,7 @@ router.post("/user/call/add", auth, async (req, res) => {
     try {
         const user = await User.updateOne({ _id: req.user._id }, {
             $push: {
-                calls: { to: req.body.id, time: req.body.time }
+                calls: { to: req.body.worker_id, time: req.body.time }
             },
             $inc: {
                 callCount: 1

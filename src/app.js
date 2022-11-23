@@ -37,7 +37,7 @@ app.use(cors(corsOpts));
 app.get("/", async (req, res) => {
     try {
         const workerData = await Worker.find({})
-            .select("_id name title avatar location")
+            .select("_id name title avatar address")
             .limit(10)
             .skip(10 * req.query.page)
         if (!workerData.length) {
@@ -62,7 +62,7 @@ app.get("/search", async (req, res) => {
                 { name: req.query.q }
             ]
         })
-            .select("_id name title avatar location")
+            .select("_id name title avatar address")
             .limit(10)
             .skip(10 * req.query.page)
         if (!worker.length) {

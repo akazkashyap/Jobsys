@@ -140,6 +140,7 @@ workerSchema.methods.toJSON = function () {
     delete worker.aadhar
     delete worker.otp
     delete worker.tokens
+    delete worker.location
     return worker
 }
 

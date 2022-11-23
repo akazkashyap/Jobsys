@@ -41,7 +41,7 @@ app.get("/", async (req, res) => {
             .limit(10)
             .skip(10 * req.query.page)
         if (!workerData.length) {
-            return res.status(404).send({ msg: "Nothing to show!" })
+            return res.status(204).send({ msg: "Nothing to show!" })
         }
         res.status(200).send(workerData)
     } catch (error) {

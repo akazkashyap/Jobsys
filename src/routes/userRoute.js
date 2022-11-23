@@ -74,7 +74,7 @@ router.get("/signup/user/verify", async (req, res) => {
         res.status(200).send({ msg: "Verfied Successfully :)" })
     } catch (error) {
         if (error.name === "TokenExpiredError") {
-            return res.send({ msg: "Verification link has expired!" })
+            return res.status(400).send({ msg: "Verification link has expired!" })
         }
         res.status(500).send({ msg: "Something went wrong!" })
     }
@@ -85,7 +85,7 @@ router.post("/user/resend-verification-link", auth, async (req, res) => {
         await req.user.generateOtp()
         req.user.save()
         req.user.sendMail()
-        res.send({ msg: "Mail sent again" })
+        res.status(200).send({ msg: "Mail sent again" })
     } catch (err) {
         res.status(500)
     }
@@ -285,7 +285,7 @@ router.delete("/user/profile/delete-account", auth, async (req, res) => {
 })
 
 //Search
-///user/search?q=query
+///user/search?q=query&lat=XX&long=XX
 router.get("/user/search", auth, async (req, res) => {
     if (!req.query.q) {
         return res.send({ msg: "Please enter keywords to search!" })
@@ -293,10 +293,19 @@ router.get("/user/search", auth, async (req, res) => {
     try {
         const worker = await Worker.find({
             $or: [
-                { location: { $regex: req.query.q } },
+                { address: { $regex: req.query.q } },
                 { title: { $regex: req.query.q } },
                 { name: req.query.q }
-            ]
+            ],
+            "location": {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [req.query.long, req.query.lat]
+                    },
+                    $maxDistance: 1000 * 50
+                }
+            }
         })
             .limit(10)
             .skip(req.query.page * 10)
@@ -312,8 +321,20 @@ router.get("/user/search", auth, async (req, res) => {
 
 //Home page
 router.get("/user", auth, async (req, res) => {
+    const distance = 100
     try {
-        const worker = await Worker.find({ status: true })
+        const worker = await Worker.find({
+            status: true,
+            "location": {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: [req.query.long, req.query.lat]
+                    },
+                    $maxDistance: 1000 * distance
+                }
+            }
+        })
             .limit(10)
             .skip(req.query.page * 10)
         res.status(200).send(worker)

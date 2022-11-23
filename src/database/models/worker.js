@@ -71,10 +71,22 @@ const workerSchema = mongoose.Schema({
         required: true
     },
 
-    location: {
+    address: {
         type: String,
         required: true,
         lowercase: true
+    },
+    location: {
+        type: {
+            type: String,
+            enum: ["Point"],
+            default: "Point",
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
     },
     available: {
         type: Boolean,
@@ -172,7 +184,7 @@ workerSchema.statics.loginWithPassword = async (mobile, email, password) => {
     }
 }
 
-
+workerSchema.index({ location: "2dsphere" })
 const Worker = mongoose.model("Workers", workerSchema)
 
 module.exports = Worker

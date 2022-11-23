@@ -57,7 +57,7 @@ app.get("/search", async (req, res) => {
     try {
         const worker = await Worker.find({
             $or: [
-                { location: { $regex: req.query.q } },
+                { address: { $regex: req.query.q } },
                 { title: { $regex: req.query.q } },
                 { name: req.query.q }
             ]

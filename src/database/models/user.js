@@ -3,7 +3,6 @@ const validator = require("validator")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const nodemailer = require("nodemailer")
-const prodUrl = "https://xoxer.herokuapp.com/signup/user/verify"
 
 
 const userSchema = mongoose.Schema({
@@ -81,6 +80,13 @@ const userSchema = mongoose.Schema({
             ref: "Workers",
         }
     }],
+    ratings: [{
+        worker_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Workers"
+        },
+        rating: Number
+    }],
     tokens: [{
         token: {
             type: String,
@@ -94,7 +100,7 @@ const userSchema = mongoose.Schema({
     avatar: {
         type: Buffer,
         default: null
-    }
+    },
 }, {
     timestamps: true
 })
@@ -128,7 +134,7 @@ userSchema.methods.generateOtp = async function () {
 
 
 //send verification mail
-userSchema.methods.sendMail = function () {
+userSchema.methods.sendMail = async function () {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -138,17 +144,35 @@ userSchema.methods.sendMail = function () {
     })
 
     let mailOptions = {
-        from: "Workey",
+        from: "WORKORA",
         to: this.email,
-        subject: "Workey",
-        html: `<h1>Hello ${this.name.toUpperCase()}</h1> 
-        <br> <p>Your verification link is: 
-        <a href="${prodUrl}?email=${this.email}&token=${this.otp[0].token}">
-        verification link.</a> <br><p>This link will expire in 180 seconds (3 minutes).</p>`
+        subject: "Workora verification",
+        //Html code
+        html: `<html lang="en">
+        <head><style>
+                body {font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;color: rgb(59, 59, 59);padding: 20%}
+                table {background: linear-gradient(180deg, rgba(138, 131, 254, 0.5) 0%, rgba(0, 177, 171, 0.5) 41%, rgba(123, 233, 255, 0.5) 100%);border-radius: 20px;padding:10%}
+                a {background-color: rgb(0, 231, 69);padding: 5px 10px;border-radius: 5px;font-family: Verdana, Geneva, Tahoma, sans-serif;color: rgb(68, 68, 68);text-decoration: none;font-weight: 600;}
+              span{font-weight:600;}
+        </style></head>
+        <body><table><tr><td>
+                        <div style="padding: 0 4em; text-align: center;">
+                            <h2>We make your work a little easy :)</h2>
+                          <p><span>Thanks for signing up in workora.</span>
+                                <br><br>
+                                Hello ${this.name.toUpperCase()}, your verification link is below, it will expire in
+                                3 minutes(180 sec).
+                            </p>
+                            <p><a href="https://workora.onrender.com/signup/user/verify?email=${this.email}&token=${this.otp[0].token}"
+                                    class="btn btn-primary">Verify</a></p>
+        </div></td></tr></table></body>
+        </html>`
     }
 
     transporter.sendMail(mailOptions)
-        .then(res => console.log("msg sent!"))
+        .then(res => {
+            console.log("msg sent!")
+        })
         .catch(err => console.log(err))
 }
 

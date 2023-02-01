@@ -66,6 +66,16 @@ const workerSchema = mongoose.Schema({
         type: Number,
         default: 0,
     },
+
+    rating: {
+        type: Number,
+        default: 0
+    },
+    ratedBy: {
+        type: Number,
+        default: 0
+    },
+
     price: {
         type: Number,
         required: true

@@ -18,8 +18,8 @@ router.post("/signup/user", async (req, res) => {
         await user.generateOtp()
         const token = await user.generateAuthToken()
         user.tokens = user.tokens.concat({ token: token })
-        await user.save()
         await user.sendMail()
+        await user.save()
         res.status(201).send({ msg: "Check Your Email and Verify!", token })
     } catch (error) {
         if (error.errors) {
@@ -196,9 +196,8 @@ router.post("/user/liked-worker/:id", auth, async (req, res) => {
     try {
         let flag = 0
         //checking if wotker alreay exist in list
-        req.user.likedWorkers.forEach((worker) => {
+        req.user.likedWorkers.forEach((worker, index) => {
             if (worker.worker_id.toString() == req.params.id) {
-                const index = req.user.likedWorkers.findIndex(item => item == worker)
                 req.user.likedWorkers.splice(index, 1)
                 flag = 1
             }
@@ -217,6 +216,31 @@ router.post("/user/liked-worker/:id", auth, async (req, res) => {
     }
 })
 
+//Add rating 
+router.post("/user/rate", auth, async (req, res) => {
+    const worker_id = req.body.worker_id
+    const rating = req.body.rating
+
+    try {
+        let ratedEmpty = 0
+        //item = rated arry in user database
+        req.user.ratings.forEach((item, index) => {
+            if (item.worker_id.toString() == worker_id) {
+                ratedEmpty = 1
+                req.user.ratings[index].rating = rating
+                res.status(200).send({ msg: "Rating updated" })
+            }
+
+        })
+        if (ratedEmpty == 0) {
+            req.user.ratings = req.user.ratings.concat({ worker_id, rating })
+            res.status(200).send({ msg: "Rating added" })
+        }
+        await req.user.save()
+    } catch (error) {
+        res.status(500)
+    }
+})
 
 router.get("/user/liked-worker/get_likes", auth, (req, res) => {
     try {
@@ -355,6 +379,12 @@ router.get("/user", auth, async (req, res) => {
 //         console.log(e)
 //         res.status(500)
 //     }
+// })
+
+//Add new feild
+// router.get("/addnew", async (req, res) => {
+//     const user = await User.updateMany({ $set: { rated: [] } })
+//     res.send("added new feild")
 // })
 
 module.exports = router

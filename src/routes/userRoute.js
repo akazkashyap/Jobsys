@@ -235,7 +235,7 @@ router.post("/user/rate", auth, async (req, res) => {
 
                 await Worker.updateOne({ _id: worker_id }, {
                     $inc: {
-                        rating: rating_difference
+                        totalRating: rating_difference
                     }
                 })
 
@@ -251,8 +251,8 @@ router.post("/user/rate", auth, async (req, res) => {
             await Worker.updateOne({ _id: worker_id },
                 {
                     $inc: {
-                        ratedBy: 1,
-                        rating: rating
+                        ratedByUsers: 1,
+                        totalRating: rating
                     }
                 }
             )

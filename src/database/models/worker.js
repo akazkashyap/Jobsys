@@ -67,11 +67,11 @@ const workerSchema = mongoose.Schema({
         default: 0,
     },
 
-    rating: {
+    totalRating: {
         type: Number,
         default: 0
     },
-    ratedBy: {
+    ratedByUsers: {
         type: Number,
         default: 0
     },

@@ -247,11 +247,12 @@ router.post("/user/rate", auth, async (req, res) => {
             req.user.ratings = req.user.ratings.concat({ worker_id, rating })
 
             //it will increase numbers of rated by users in workers rated by field.
+            //Also adds rating total
             await Worker.updateOne({ _id: worker_id },
                 {
                     $inc: {
                         ratedBy: 1,
-                        rating
+                        rating: rating
                     }
                 }
             )

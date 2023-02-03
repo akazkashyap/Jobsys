@@ -224,16 +224,37 @@ router.post("/user/rate", auth, async (req, res) => {
     try {
         let ratedEmpty = 0
         //item = rated arry in user database
-        req.user.ratings.forEach((item, index) => {
+        req.user.ratings.forEach(async (item, index) => {
             if (item.worker_id.toString() == worker_id) {
                 ratedEmpty = 1
+                //to find the difference of the rating
+                const previous_rating = req.user.ratings[index].rating
+                const rating_difference = rating - previous_rating
+
                 req.user.ratings[index].rating = rating
+
+                await Worker.updateOne({ _id: worker_id }, {
+                    $inc: {
+                        rating: rating_difference
+                    }
+                })
+
                 res.status(200).send({ msg: "Rating updated" })
             }
 
         })
         if (ratedEmpty == 0) {
             req.user.ratings = req.user.ratings.concat({ worker_id, rating })
+
+            //it will increase numbers of rated by users in workers rated by field.
+            await Worker.updateOne({ _id: worker_id },
+                {
+                    $inc: {
+                        ratedBy: 1,
+                        rating
+                    }
+                }
+            )
             res.status(200).send({ msg: "Rating added" })
         }
         await req.user.save()

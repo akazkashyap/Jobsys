@@ -48,8 +48,10 @@ router.post("/signup/worker", checkDir, upload, async (req, res) => {
                 $or: [
                     { mobile: req.body.mobile },
                     {
-                        'idProof.number': req.body.idProof.number
+                        "idProof.name": req.body.idProof.name,
+                        "idProof.number": req.body.idProof.number
                     }
+
                 ]
             })
             //Actioin if exists

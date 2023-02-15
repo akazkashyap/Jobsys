@@ -47,12 +47,14 @@ router.post("/signup/worker", checkDir, upload, async (req, res) => {
             const worker = await Worker.find({
                 $or: [
                     { mobile: req.body.mobile },
-                    { aadhar: req.body.aadhar }
+                    {
+                        'idProof.number': req.body.idProof.number
+                    }
                 ]
             })
             //Actioin if exists
             if (worker.length != 0) {
-                res.status(400).send({ msg: "Mobile/Aadhar already associated with a worker!" })
+                res.status(400).send({ msg: "Mobile/ID Proof already associated with a worker!" })
             }
             else {
                 const buffer = await sharp(req.file.path).resize(200, 200).webp().toBuffer()

@@ -85,7 +85,14 @@ const userSchema = mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Workers"
         },
-        rating: Number
+        rating: {
+            type: Number,
+            validate(value) {
+                if (value > 5) {
+                    throw new Error("rating shouldn't be greater than 5!")
+                }
+            }
+        }
     }],
     tokens: [{
         token: {

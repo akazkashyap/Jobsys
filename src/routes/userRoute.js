@@ -403,10 +403,4 @@ router.get("/user", auth, async (req, res) => {
 //     }
 // })
 
-//Add new feild
-// router.get("/addnew", async (req, res) => {
-//     const user = await User.updateMany({ $set: { rated: [] } })
-//     res.send("added new feild")
-// })
-
 module.exports = router

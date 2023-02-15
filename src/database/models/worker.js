@@ -23,15 +23,13 @@ const workerSchema = mongoose.Schema({
         },
         required: true,
     },
-    aadhar: {
-        type: Number,
-        unique: true,
-        required: true,
-        validate(value) {
-            if (value < 1000000000000000) {
-                throw new Error("Please enter a valid aadhar number.")
-            }
-        },
+    idProof: {
+        name: String,
+        number: {
+            type: String,
+            unique: true,
+            required: true
+        }
     },
     mobile: {
         type: String,

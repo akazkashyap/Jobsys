@@ -172,7 +172,7 @@ router.post("/user/profile/set-avatar", auth, upload.single("avatar"), async (re
 
 //UPDATE USER DETAILS
 router.patch("/user/profile/update", auth, async (req, res) => {
-    const allowedUpdates = ["name", "password", "location", "age"]
+    const allowedUpdates = ["name", "password", "location", "age", "mobile"]
     const providedUpdates = Object.keys(req.body)
     const allowed = providedUpdates.every(update => allowedUpdates.includes(update))
 

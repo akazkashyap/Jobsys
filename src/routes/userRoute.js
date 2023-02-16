@@ -343,11 +343,11 @@ router.get("/user/search", auth, async (req, res) => {
                 { title: { $regex: req.query.q } },
                 { name: req.query.q }
             ],
-            "location": {
+            location: {
                 $near: {
                     $geometry: {
                         type: "Point",
-                        coordinates: [req.query.long, req.query.lat]
+                        coordinates: [req.query.lat, req.query.long]
                     },
                     $maxDistance: 1000 * 50
                 }

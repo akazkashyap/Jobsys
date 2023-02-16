@@ -367,15 +367,14 @@ router.get("/user/search", auth, async (req, res) => {
 
 //Home page
 router.get("/user", auth, async (req, res) => {
-    const distance = 100
+    const distance = 50 //in kilometers
     try {
         const worker = await Worker.find({
-            status: true,
-            "location": {
+            location: {
                 $near: {
                     $geometry: {
                         type: "Point",
-                        coordinates: [req.query.long, req.query.lat]
+                        coordinates: [req.query.lat, req.query.long]
                     },
                     $maxDistance: 1000 * distance
                 }

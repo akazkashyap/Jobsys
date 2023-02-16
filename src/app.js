@@ -36,13 +36,33 @@ app.use(cors(corsOpts));
 //HOME PAGE
 app.get("/", async (req, res) => {
     try {
-        const workerData = await Worker.find({})
-            .select("_id name title avatar address")
-            .limit(10)
-            .skip(10 * req.query.page)
-        if (!workerData.length) {
-            return res.status(204).send({ msg: "Nothing to show!" })
-        }
+        router.get("/user", auth, async (req, res) => {
+            const distance = 100 //in kilometers
+            try {
+                const worker = await Worker.find({
+                    location: {
+                        $near: {
+                            $geometry: {
+                                type: "Point",
+                                coordinates: [req.query.lat, req.query.long]
+                            },
+                            $maxDistance: 1000 * distance
+                        }
+                    }
+                })
+                    .select("_id name title avatar address")
+                    .limit(10)
+                    .skip(req.query.page * 10)
+
+                if (!workerData.length) {
+                    return res.status(204).send({ msg: "Sorry no workes found in your area :(" })
+                }
+                res.status(200).send(worker)
+            } catch (error) {
+                res.status(500)
+            }
+        })
+
         res.status(200).send(workerData)
     } catch (error) {
         res.status(500).send({ msg: "Something went wrong!" })

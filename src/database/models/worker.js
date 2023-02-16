@@ -107,6 +107,7 @@ const workerSchema = mongoose.Schema({
         type: Buffer,
         required: true
     },
+
     // imageLink: {
     //     type: String,
     //     required: true
@@ -144,7 +145,7 @@ workerSchema.pre("save", async function (req, res, next) {
 workerSchema.methods.toJSON = function () {
     const worker = this.toObject()
     delete worker.password
-    delete worker.aadhar
+    delete worker.idProof
     delete worker.otp
     delete worker.tokens
     delete worker.location

@@ -1,8 +1,8 @@
 # Jobsys
 A Job listing app where you can apply for jobs as a user and can post a job as an Employer.
 
-Features :
-  for Employer:
+**Features** :
+- for Employer:
     1. Secure Authentication
     2. Login/ Logout 
     3. Add Jobs
@@ -11,7 +11,7 @@ Features :
     6. Update Profile
     7. Delete Account
   
-  For Users:
+- For Users:
     1. Secure Authentication
     2. Login/ Logout
     3. Search Jobs

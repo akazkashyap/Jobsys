@@ -1,5 +1,5 @@
 # Jobsys
-A Job listing app where you can apply for jobs as a user and can post a job as an Employer. `#888A85`
+`A Job listing app where you can apply for jobs as a user and can post a job as an Employer. #888A85`
 
 **Features** :
 - for Employer:

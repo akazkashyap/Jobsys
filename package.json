@@ -1,5 +1,5 @@
 {
-  "name": "worker_api",
+  "name": "jobsys_api",
   "version": "2.0.0",
   "main": "app.js",
   "scripts": {
